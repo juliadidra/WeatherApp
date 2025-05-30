@@ -33,6 +33,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherapp.ui.theme.WeatherAppTheme
+import com.example.weatherapp.ui.components.DataField
+import com.example.weatherapp.ui.components.PasswordField
+
 
 class RegisterActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,7 +60,7 @@ fun RegisterPage(modifier: Modifier = Modifier) {
     var confirmpassword by rememberSaveable { mutableStateOf("") }
     val activity = LocalContext.current as? Activity
     Column(
-        modifier = modifier.padding(16.dp).fillMaxSize(),
+        modifier = modifier.padding(12.dp).fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = CenterHorizontally,
     ) {
@@ -65,43 +68,44 @@ fun RegisterPage(modifier: Modifier = Modifier) {
             text = "Bem-vindo/a! Faça seu cadastro",
             fontSize = 24.sp
         )
-        OutlinedTextField(
+        DataField(
+            label = "Digite seu nome",
             value = name,
-            label = { Text(text = "Digite seu nome") },
-            modifier = modifier.fillMaxWidth(fraction = 0.9f),
-            onValueChange = { name = it }
+            onValueChange = { name = it },
+            modifier = modifier.fillMaxWidth(fraction = 0.9f)
         )
 
-        OutlinedTextField(
+        DataField(
+            label = "Digite seu e-mail",
             value = email,
-            label = { Text(text = "Digite seu e-mail") },
-            modifier = modifier.fillMaxWidth(fraction = 0.9f),
-            onValueChange = { email = it }
+            onValueChange = { email = it },
+            modifier = modifier.fillMaxWidth(fraction = 0.9f)
         )
 
-        OutlinedTextField(
+        PasswordField(
+            label = "Digite sua senha",
             value = password,
-            label = { Text(text = "Digite sua senha") },
-            modifier = modifier.fillMaxWidth(fraction = 0.9f),
             onValueChange = { password = it },
-            visualTransformation = PasswordVisualTransformation()
+            modifier = modifier.fillMaxWidth(fraction = 0.9f)
         )
 
-        OutlinedTextField(
+        PasswordField(
+            label = "Repita sua senha",
             value = confirmpassword,
-            label = { Text(text = "Repita sua senha") },
-            modifier = modifier.fillMaxWidth(fraction = 0.9f),
             onValueChange = { confirmpassword = it },
-            visualTransformation = PasswordVisualTransformation()
+            modifier = modifier.fillMaxWidth(fraction = 0.9f)
         )
 
-        Row(modifier = modifier) {
+        Column(modifier = modifier,
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = CenterHorizontally,) {
             Button(
                 onClick = {
                     Toast.makeText(activity, "Registro OK!", Toast.LENGTH_LONG).show()
                     activity?.finish()
                 },
                 enabled = email.isNotEmpty() && password.isNotEmpty()
+
             ) {
                 Text("Registrar")
             }
