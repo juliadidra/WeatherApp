@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.weatherapp.ui.CityDialog
@@ -45,6 +46,7 @@ import com.example.weatherapp.ui.nav.MainNavHost
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.weatherapp.ui.nav.BottomNavBar
 import androidx.navigation.NavDestination.Companion.hasRoute
+import com.example.weatherapp.db.fb.FBDatabase
 import com.example.weatherapp.ui.nav.Route
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -55,7 +57,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val viewModel : MainViewModel by viewModels()
+            val fbDB = remember { FBDatabase() }
+            val viewModel : MainViewModel = viewModel(
+                factory = MainViewModelFactory(fbDB)
+            )
             var showDialog by remember { mutableStateOf(false) }
             val navController = rememberNavController()
             val currentRoute = navController.currentBackStackEntryAsState()

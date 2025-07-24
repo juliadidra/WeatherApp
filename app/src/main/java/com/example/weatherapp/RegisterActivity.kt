@@ -32,9 +32,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.weatherapp.db.fb.FBDatabase
+import com.example.weatherapp.db.fb.toFBUser
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.example.weatherapp.ui.components.DataField
 import com.example.weatherapp.ui.components.PasswordField
+import com.example.weatherapp.ui.model.User
 
 import com.google.firebase.Firebase
 
@@ -111,6 +114,7 @@ fun RegisterPage(modifier: Modifier = Modifier) {
                             if (task.isSuccessful) {
                                 Toast.makeText(activity,
                                     "Registro OK!", Toast.LENGTH_LONG).show()
+                                FBDatabase().register(User(name, email).toFBUser())
 
                             } else {
                                 Toast.makeText(activity,
