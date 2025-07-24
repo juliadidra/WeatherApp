@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -12,6 +14,11 @@ android {
     compileSdk = 35
 
     defaultConfig {
+        val keyFile = project.rootProject.file("local.properties")
+        val props = Properties()
+        props.load(keyFile.inputStream())
+        buildConfigField ("String", "WEATHER_API_KEY",
+            props.getProperty("WEATHER_API_KEY"))
         applicationId = "com.example.weatherapp"
         minSdk = 24
         targetSdk = 35
@@ -39,6 +46,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -70,4 +78,6 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.3.0")
 // Google maps for compose
     implementation("com.google.maps.android:maps-compose:2.8.0")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 }
