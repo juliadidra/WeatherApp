@@ -46,6 +46,7 @@ import com.example.weatherapp.ui.nav.MainNavHost
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.weatherapp.ui.nav.BottomNavBar
 import androidx.navigation.NavDestination.Companion.hasRoute
+import com.example.weatherapp.api.WeatherService
 import com.example.weatherapp.db.fb.FBDatabase
 import com.example.weatherapp.ui.nav.Route
 import com.google.firebase.Firebase
@@ -58,8 +59,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val fbDB = remember { FBDatabase() }
+            val weatherService = remember { WeatherService() }
             val viewModel : MainViewModel = viewModel(
-                factory = MainViewModelFactory(fbDB)
+                factory = MainViewModelFactory(fbDB, weatherService)
             )
             var showDialog by remember { mutableStateOf(false) }
             val navController = rememberNavController()
