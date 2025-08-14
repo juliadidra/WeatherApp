@@ -22,7 +22,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.ui.res.painterResource
+import coil.compose.AsyncImage
 import com.example.weatherapp.MainViewModel
+import com.example.weatherapp.R
 
 
 @Composable
@@ -41,10 +44,11 @@ fun HomePage(viewModel: MainViewModel) {
             }
         } else {
             Row {
-                Icon(
-                    imageVector = Icons.Filled.AccountBox,
-                    contentDescription = "Localized description",
-                    modifier = Modifier.size(150.dp)
+                AsyncImage( // Substitui o Icon
+                    model = viewModel.city?.weather?.imgUrl,
+                    modifier = Modifier.size(100.dp),
+                    error = painterResource(id = R.drawable.loader),
+                    contentDescription = "Imagem"
                 )
                 Column {
                     Spacer(modifier = Modifier.size(12.dp))
