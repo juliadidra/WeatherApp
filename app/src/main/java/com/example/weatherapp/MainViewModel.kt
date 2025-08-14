@@ -109,4 +109,17 @@ class MainViewModel (private val db: FBDatabase, private val service : WeatherSe
         }
     }
 
+    fun loadBitmap(name: String) {
+        val city = _cities[name]
+        service.getBitmap(city?.weather!!.imgUrl) { bitmap ->
+            val newCity = city.copy(
+                weather = city.weather?.copy(
+                    bitmap = bitmap
+                )
+            )
+            _cities.remove(name)
+            _cities[name] = newCity
+        }
+    }
+
 }
