@@ -130,22 +130,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-//@Preview(showBackground = true)
-@Composable
-fun HomePage(viewModel: MainViewModel) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-            .background(Color.Blue)
-            .wrapContentSize(Alignment.Center)
-    ) {
-        Text(
-            text = "Home",
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            textAlign = TextAlign.Center,
-            fontSize = 20.sp
-        )
-    }
-}
-
