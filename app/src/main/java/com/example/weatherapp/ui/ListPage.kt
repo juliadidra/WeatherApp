@@ -29,6 +29,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -88,6 +90,18 @@ fun CityItem(
             Text(modifier = Modifier,
                 text = city.name,
                 fontSize = 24.sp)
+            val icon = if (city.isMonitored) {
+                Icons.Filled.Notifications
+            } else {
+                Icons.Outlined.Notifications
+            }
+
+            Icon(
+                imageVector = icon,
+                contentDescription = "Monitorada?",
+                modifier = Modifier.size(20.dp) // menorzinho para caber na lista
+            )
+
             Text(modifier = Modifier,
                 text = city.weather?.desc?:"carregando...",
                 fontSize = 16.sp)

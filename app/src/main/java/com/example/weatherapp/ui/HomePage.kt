@@ -1,6 +1,7 @@
 package com.example.weatherapp.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
@@ -22,6 +23,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import com.example.weatherapp.MainViewModel
@@ -54,6 +57,25 @@ fun HomePage(viewModel: MainViewModel) {
                     Spacer(modifier = Modifier.size(12.dp))
                     Text( text = viewModel.city?.name ?: "Selecione uma cidade...",
                         fontSize = 28.sp )
+                    val icon = if (viewModel.city?.isMonitored == true) {
+                        Icons.Filled.Notifications
+                    } else {
+                        Icons.Outlined.Notifications
+                    }
+
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = "Monitorada?",
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clickable(enabled = viewModel.city != null) {
+                                viewModel.update(
+                                    viewModel.city!!.copy(
+                                        isMonitored = !viewModel.city!!.isMonitored
+                                    )
+                                )
+                            }
+                    )
                     Spacer(modifier = Modifier.size(12.dp))
                     Text( text = viewModel.city?.weather?.desc ?: "...",
                         fontSize = 22.sp )
