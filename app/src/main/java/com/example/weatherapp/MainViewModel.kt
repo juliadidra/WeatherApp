@@ -13,13 +13,14 @@ import com.example.weatherapp.db.fb.FBCity
 import com.example.weatherapp.db.fb.FBDatabase
 import com.example.weatherapp.db.fb.FBUser
 import com.example.weatherapp.db.fb.toFBCity
+import com.example.weatherapp.monitor.ForecastMonitor
 import com.example.weatherapp.ui.model.City
 import com.example.weatherapp.ui.model.User
 import com.example.weatherapp.ui.nav.Route
 import com.google.android.gms.maps.model.LatLng
 
 
-class MainViewModel (private val db: FBDatabase, private val service : WeatherService): ViewModel(), FBDatabase.Listener{
+class MainViewModel (private val db: FBDatabase, private val service : WeatherService, private val monitor: ForecastMonitor): ViewModel(), FBDatabase.Listener{
 
     private val _cities = mutableStateMapOf<String, City>()
 
@@ -70,12 +71,17 @@ class MainViewModel (private val db: FBDatabase, private val service : WeatherSe
     }
 
     override fun onUserSignOut() {
-        //TODO("Not yet implemented")
+        monitor.cancelAll()
+
     }
 
+
     override fun onCityAdded(city: FBCity) {
-        _cities[city.name!!] = city.toCity()
+        val newCity = city.toCity()
+        _cities[city.name!!] = newCity
+        monitor.updateCity(newCity) // cria/cancela o worker dependendo de isMonitored
     }
+
 
     override fun onCityUpdated(city: FBCity) {
         val oldCity = _cities[city.name]
@@ -87,14 +93,21 @@ class MainViewModel (private val db: FBDatabase, private val service : WeatherSe
         if (_city.value?.name == city.name) {
             _city.value = _cities[city.name]
         }
+        monitor.updateCity(city.toCity())
     }
+
 
     override fun onCityRemoved(city: FBCity) {
         _cities.remove(city.name)
 
-        if (_city.value?.name == city.name) { _city.value = null }
+        val removedCity = city.toCity()
+        monitor.cancelCity(removedCity) // cancela workers e notificações da cidade removida
 
+        if (_city.value?.name == city.name) {
+            _city.value = null // limpa se a cidade removida era a selecionada
+        }
     }
+
 
     fun loadWeather(name: String) {
         service.getWeather(name) { apiWeather ->
