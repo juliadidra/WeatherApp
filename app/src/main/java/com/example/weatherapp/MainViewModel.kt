@@ -14,13 +14,14 @@ import com.example.weatherapp.db.fb.FBDatabase
 import com.example.weatherapp.db.fb.FBUser
 import com.example.weatherapp.db.fb.toFBCity
 import com.example.weatherapp.monitor.ForecastMonitor
+import com.example.weatherapp.repo.Repository
 import com.example.weatherapp.ui.model.City
 import com.example.weatherapp.ui.model.User
 import com.example.weatherapp.ui.nav.Route
 import com.google.android.gms.maps.model.LatLng
 
 
-class MainViewModel (private val db: FBDatabase, private val service : WeatherService, private val monitor: ForecastMonitor): ViewModel(), FBDatabase.Listener{
+class MainViewModel (private val repository: Repository, private val service : WeatherService, private val monitor: ForecastMonitor): ViewModel(), Repository.Listener{
 
     private val _cities = mutableStateMapOf<String, City>()
 
@@ -42,17 +43,18 @@ class MainViewModel (private val db: FBDatabase, private val service : WeatherSe
 
 
     init {
-        db.setListener(this)
+        repository.setListener(this)
+
     }
 
     fun remove(city: City) {
-        db.remove(city.toFBCity())
+        repository.remove(city)
     }
 
     fun add(name: String) {
         service.getLocation(name) { lat, lng ->
             if (lat != null && lng != null) {
-                db.add(City(name=name, location=LatLng(lat, lng)).toFBCity())
+                repository.add(City(name=name, location=LatLng(lat, lng)))
             }
         }
     }
@@ -61,13 +63,13 @@ class MainViewModel (private val db: FBDatabase, private val service : WeatherSe
 
         service.getName(location.latitude, location.longitude) { name ->
             if (name != null) {
-                db.add(City(name = name, location = location).toFBCity())
+                repository.add(City(name = name, location = location))
             }
         }
     }
 
-    override fun onUserLoaded(user: FBUser) {
-        _user.value = user.toUser()
+    override fun onUserLoaded(user: User) {
+        _user.value = user
     }
 
     override fun onUserSignOut() {
@@ -76,31 +78,31 @@ class MainViewModel (private val db: FBDatabase, private val service : WeatherSe
     }
 
 
-    override fun onCityAdded(city: FBCity) {
-        val newCity = city.toCity()
+    override fun onCityAdded(city: City) {
+        val newCity = city
         _cities[city.name!!] = newCity
         monitor.updateCity(newCity) // cria/cancela o worker dependendo de isMonitored
     }
 
 
-    override fun onCityUpdated(city: FBCity) {
+    override fun onCityUpdated(city: City) {
         val oldCity = _cities[city.name]
         _cities.remove(city.name)
-        _cities[city.name!!] = city.toCity().copy(
+        _cities[city.name!!] = city.copy(
             weather = oldCity?.weather,
             forecast = oldCity?.forecast
         )
         if (_city.value?.name == city.name) {
             _city.value = _cities[city.name]
         }
-        monitor.updateCity(city.toCity())
+        monitor.updateCity(city)
     }
 
 
-    override fun onCityRemoved(city: FBCity) {
+    override fun onCityRemoved(city: City) {
         _cities.remove(city.name)
 
-        val removedCity = city.toCity()
+        val removedCity = city
         monitor.cancelCity(removedCity) // cancela workers e notificações da cidade removida
 
         if (_city.value?.name == city.name) {
@@ -140,7 +142,7 @@ class MainViewModel (private val db: FBDatabase, private val service : WeatherSe
     }
 
     fun update(city: City) {
-        db.update(city.toFBCity())
+        repository.update(city)
     }
 
 

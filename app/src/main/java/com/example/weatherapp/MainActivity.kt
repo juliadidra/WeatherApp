@@ -52,7 +52,9 @@ import com.weatherapp.ui.nav.BottomNavBar
 import androidx.navigation.NavDestination.Companion.hasRoute
 import com.example.weatherapp.api.WeatherService
 import com.example.weatherapp.db.fb.FBDatabase
+import com.example.weatherapp.db.local.LocalDatabase
 import com.example.weatherapp.monitor.ForecastMonitor
+import com.example.weatherapp.repo.Repository
 import com.example.weatherapp.ui.nav.Route
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -63,11 +65,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val user = Firebase.auth.currentUser
+            val uid = user?.uid ?: "visitante"
+            val localDB = remember { LocalDatabase(this, "weatherapp_localDB_$uid") }
             val fbDB = remember { FBDatabase() }
+            val repository = remember {
+                Repository(fbDB, localDB)
+            }
             val weatherService = remember { WeatherService() }
             val monitor = remember { ForecastMonitor(this) }
             val viewModel : MainViewModel = viewModel(
-                factory = MainViewModelFactory(fbDB, weatherService, monitor)
+                factory = MainViewModelFactory(repository, weatherService, monitor)
             )
             DisposableEffect(Unit) {
                 val listener = Consumer<Intent> { intent ->
